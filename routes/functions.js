@@ -1,9 +1,9 @@
 // do a database lookup here
-export const getUser = async (username) => {
+module.exports.getUSer = async (username) => {
 	return { password: "123456", username, role: "student" };
 };
 
-export async function createUser(username, password, role) {
+module.exports.createUser = async function (username, password, role) {
 	const DB_user = await getUser(username);
 
 	if (DB_user) {
