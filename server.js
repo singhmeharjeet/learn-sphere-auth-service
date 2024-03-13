@@ -10,12 +10,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-	res.json({
-		message: "Welcome to the Auth Service of Learn Sphere!",
-	});
+  res.json({
+    message: "Welcome to the Auth Service of Learn Sphere!",
+  });
 });
 
 setupLoginRoute(app);
 setupSignupRoute(app);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Listening at port ${PORT}...`);
+});
