@@ -1,7 +1,7 @@
 const env = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-const { getUser } = require("./functions.js");
+const { getUser } = require("./db.js");
 
 module.exports = (app) =>
 	app.post("/login", async (req, res) => {
@@ -29,6 +29,7 @@ module.exports = (app) =>
 
 		res.cookie("token", token);
 
+		console.log("logged in successfully.");
 		return res.json({
 			success: true,
 			message: "Logged in successfully",

@@ -2,7 +2,7 @@ const env = require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
 
-const { createUser } = require("./functions.js");
+const { createUser } = require("./db.js");
 
 module.exports = (app) =>
 	app.post("/signup", async (req, res) => {
