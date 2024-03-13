@@ -1,7 +1,7 @@
 const env = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-const { getUser } = require("../db");
+const { getUser } = require("../functions.js");
 
 module.exports = (app) =>
 	app.post("/login", async (req, res) => {
