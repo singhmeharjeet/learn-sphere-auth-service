@@ -10,9 +10,7 @@ module.exports = (app) =>
 
 		const user = await createUser(username, password, role);
 
-		const token = jwt.sign(user, process.env.MY_SECRET, {
-			expiresIn: "1h",
-		});
+		const token = jwt.sign(user, process.env.MY_SECRET);
 
 		res.cookie("token", token);
 

@@ -25,9 +25,7 @@ module.exports = (app) =>
 
 		delete DB_user.password;
 
-		const token = jwt.sign(DB_user, process.env.MY_SECRET, {
-			expiresIn: "1h",
-		});
+		const token = jwt.sign(DB_user, process.env.MY_SECRET);
 
 		res.cookie("token", token);
 

@@ -2,23 +2,58 @@ const env = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 module.exports = (app) =>
-	app.get("/verify", async (req, res) => {
-		const headers = req.headers;
-		const token = headers.authorization.split(" ")[1];
+	app.get("/verify", (req, res) => {
+		console.log("auth/verify endpoint hit");
 
-		const user = jwt.verify(token, process.env.MY_SECRET);
+		let token = "";
+		try {
+			const headers = req.headers;
+			console.log("headers: ", headers);
+			const cookie = req.headers.cookie;
+			if (!cookie) {
+				return res.status(403).json({
+					success: false,
+					message: "No JWT token provided",
+				});
+			}
 
-		console.log("Request to verify token: ", req);
+			token = cookie.split("=")[1];
 
-		res.cookie("token", token);
-		if (!user) {
+			if (!token) {
+				return res.status(403).json({
+					success: false,
+					message: "No JWT token provided",
+				});
+			}
+		} catch (error) {
 			return res.status(403).json({
-				error: "invalid token",
+				success: false,
+				message: "Some Error occurded while parsing the token",
 			});
 		}
-		return res.json({
-			success: true,
-			message: "Logged in successfully",
-			user,
-		});
+
+		try {
+			const user = jwt.verify(token, process.env.MY_SECRET);
+			res.cookie("token", token);
+			if (!user) {
+				return res.status(403).json({
+					success: false,
+					message: "invalid token",
+				});
+			}
+			const reply = {
+				success: true,
+				message: "Verified successfully",
+				user,
+			};
+			console.log("Replying with: ", reply);
+			return res.json(reply);
+		} catch (err) {
+			console.log("Error: ", err);
+
+			return res.status(403).json({
+				success: false,
+				message: "Token expired",
+			});
+		}
 	});

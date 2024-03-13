@@ -1,5 +1,5 @@
 // do a database lookup here
-module.exports.getUSer = async (username) => {
+module.exports.getUser = async (username) => {
 	return { password: "123456", username, role: "student" };
 };
 
@@ -16,4 +16,4 @@ module.exports.createUser = async function (username, password, role) {
 	// go ahead and create user
 	// create user in database
 	return { username, role };
-}
+};
