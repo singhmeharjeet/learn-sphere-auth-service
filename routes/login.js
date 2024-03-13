@@ -1,26 +1,31 @@
 const env = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-// do a database lookup here
-const getUser = async (username) => {
-	return { userId: 123, password: "123456", username, isAdmin: false };
-};
+const { getUser } = require("../db");
 
 module.exports = (app) =>
 	app.post("/login", async (req, res) => {
 		const { username, password } = req.body;
 
-		const user = await getUser(username);
+		const DB_user = await getUser(username);
 
-		if (user.password !== password) {
+		if (!DB_user) {
 			return res.status(403).json({
-				error: "invalid login",
+				success: false,
+				message: "User not found.",
 			});
 		}
 
-		delete user.password;
+		if (DB_user.password !== password) {
+			return res.status(403).json({
+				success: false,
+				message: "Invalid Credentials.",
+			});
+		}
 
-		const token = jwt.sign(user, process.env.MY_SECRET, {
+		delete DB_user.password;
+
+		const token = jwt.sign(DB_user, process.env.MY_SECRET, {
 			expiresIn: "1h",
 		});
 
@@ -29,6 +34,6 @@ module.exports = (app) =>
 		return res.json({
 			success: true,
 			message: "Logged in successfully",
-			user,
+			user: DB_user,
 		});
 	});

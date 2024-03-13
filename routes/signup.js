@@ -1,8 +1,8 @@
 const env = require("dotenv").config();
-async function createUser(username, password, role) {
-	// create user in database
-	return { username, role };
-}
+
+const jwt = require("jsonwebtoken");
+
+const { createUser } = require("../db");
 
 module.exports = (app) =>
 	app.post("/signup", async (req, res) => {
