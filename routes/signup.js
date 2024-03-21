@@ -1,22 +1,42 @@
 const env = require("dotenv").config();
-
 const jwt = require("jsonwebtoken");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 
-const { createUser } = require("./db.js");
+const { createUser, getUser } = require("./db.js");
 
-module.exports = (app) =>
-	app.post("/signup", async (req, res) => {
-		const { username, password, role } = req.body;
+passport.use("local-signup", new LocalStrategy(async (username, password, done) => {
+    try {
+        return done(null, { username, password }); 
+    } catch (error) {
+        return done(error);
+    }
+}));
 
-		const user = await createUser(username, password, role);
+module.exports = (app) => {
+    app.use(passport.initialize());
 
-		const token = jwt.sign(user, process.env.MY_SECRET);
-
-		res.cookie("token", token);
-
-		return res.json({
-			success: true,
-			message: "Signed up successfully",
-			user,
-		});
-	});
+    app.post("/signup", async (req, res, next) => {
+        try {
+            const { username, password, role } = req.body; 
+            const existingUser = await getUser(username);
+            if (existingUser) {
+                return res.status(400).json({ success: false, message: "User already exists" });
+            }
+            const user = await createUser(username, password, role); 
+            req.user = user; 
+            next(); 
+        } catch (error) {
+            return res.status(500).json({ success: false, message: "Error during signup", error: error.message });
+        }
+    }, passport.authenticate("local-signup", { session: false }), (req, res) => {
+		 //const token = jwt.sign(req.user, process.env.MY_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(req.user, process.env.MY_SECRET);
+        res.cookie("token", token);
+        return res.json({
+            success: true,
+            message: "Signed up successfully",
+            user: req.user,
+        });
+    });
+};

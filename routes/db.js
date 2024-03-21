@@ -50,7 +50,32 @@ const createUser = async function (username, password, role) {
 		};
 	}
 };
+
+const deleteUser = async function (username) {
+    try {
+        const userDoc = await db.collection("users").doc(username).get();
+        if (!userDoc.exists) {
+            return {
+                success: false,
+                message: "User not found",
+            };
+        }
+        await db.collection("users").doc(username).delete();
+        return {
+            success: true,
+            message: "User deleted successfully",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: "Error deleting user: " + error.message,
+        };
+    }
+};
+
+
 module.exports = {
-	getUser,
-	createUser,
+    getUser,
+    createUser,
+    deleteUser,
 };

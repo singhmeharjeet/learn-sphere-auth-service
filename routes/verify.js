@@ -1,50 +1,64 @@
 const env = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-module.exports = (app) =>
-	app.get("/verify", (req, res) => {
-		const cookie = req?.headers?.cookie;
-		if (!cookie) {
-			return res.status(403).json({
-				success: false,
-				message: "No JWT token provided",
-			});
-		}
+module.exports = (app) => {
+    app.get("/verify", (req, res) => {
+		
+        const cookie = req?.headers?.cookie;
+		console.log(cookie);
+		
+        if (!cookie) {
+            return res.status(403).json({
+                success: false,
+                message: "No JWT token provided",
+            });
+        }
 
-		let token = "";
-		try {
-			token = cookie.split("=")[1];
+        let token = "";
+        try {
+            const tokenParts = cookie.split("=");
+            if (tokenParts.length !== 2 || tokenParts[0] !== "token") {
+                throw new Error("Invalid token format");
+            }
+            token = tokenParts[1];
+        } catch (error) {
+            return res.status(403).json({
+                success: false,
+                message: "Error parsing token: " + error.message,
+            });
+        }
 
-			if (!token) {
-				return res.status(403).json({
-					success: false,
-					message: "No JWT token provided",
-				});
-			}
-		} catch (error) {
-			return res.status(403).json({
-				success: false,
-				message: "Some Error occurded while parsing the token",
-			});
-		}
+        try {
+            const decodedToken = jwt.verify(token, process.env.MY_SECRET);
+            if (!decodedToken) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Invalid token",
+                });
+            }
 
-		try {
-			const user = jwt.verify(token, process.env.MY_SECRET);
-			if (!user) {
-				return res.status(403).json({
-					success: false,
-					message: "invalid token",
-				});
-			}
-			return res.json({
-				success: true,
-				message: "Verified successfully",
-				user,
-			});
-		} catch (err) {
-			return res.status(403).json({
-				success: false,
-				message: "Token expired or Token is invalid",
-			});
-		}
-	});
+            return res.json({
+                success: true,
+                message: "Verified successfully",
+                user: decodedToken,
+            });
+        } catch (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Token expired",
+                });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Invalid token",
+                });
+            } else {
+                return res.status(500).json({
+                    success: false,
+                    message: "Internal server error",
+                });
+            }
+        }
+    });
+};
