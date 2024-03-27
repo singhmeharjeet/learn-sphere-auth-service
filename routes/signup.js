@@ -32,7 +32,15 @@ module.exports = (app) => {
 					});
 				}
 				const user = await createUser(username, password, role);
-				req.user = user;
+
+				const modifiedUser = {
+					username: user.username,
+					role: role,
+					iat: user.iat
+				};
+
+				req.user = modifiedUser;
+
 				next();
 			} catch (error) {
 				return res.status(500).json({
@@ -45,6 +53,7 @@ module.exports = (app) => {
 		passport.authenticate("local-signup", { session: false }),
 		(req, res) => {
 			//const token = jwt.sign(req.user, process.env.MY_SECRET, { expiresIn: '1h' });
+			
 			const token = jwt.sign(req.user, process.env.MY_SECRET);
 			/**
 			 * {

@@ -36,7 +36,6 @@ module.exports = (app) => {
 		passport.authenticate("local", { session: false }),
 		async (req, res) => {
 			const token = jwt.sign(req.user, process.env.MY_SECRET);
-			res.cookie("jwt", token);
 			return res.json({
 				success: true,
 				message: "Logged in successfully",
