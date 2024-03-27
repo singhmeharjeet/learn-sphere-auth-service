@@ -64,7 +64,6 @@ module.exports = (app) => {
 				});
 			}
 
-			console.log("Token is verified: ", req.headers["origin"]);
 			return res.json({
 				success: true,
 				message: "Verified successfully",
