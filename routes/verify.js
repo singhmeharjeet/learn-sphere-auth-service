@@ -2,7 +2,7 @@ const env = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 module.exports = (app) => {
-	app.get("/verify", (req, res) => {
+	app.get("/api/auth-service/verify", (req, res) => {
 		/**
 		 * Return type:
 		 *

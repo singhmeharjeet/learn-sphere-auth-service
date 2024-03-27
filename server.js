@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
+app.get("/api/auth-service/", (req, res) => {
 	res.json({
 		message: "Welcome to the Auth Service of Learn Sphere!",
 	});

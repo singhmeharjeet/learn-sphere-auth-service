@@ -32,7 +32,7 @@ passport.use(
 module.exports = (app) => {
 	app.use(passport.initialize());
 	app.post(
-		"/login",
+		"/api/auth-service/login",
 		passport.authenticate("local", { session: false }),
 		async (req, res) => {
 			const token = jwt.sign(req.user, process.env.MY_SECRET);

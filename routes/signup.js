@@ -20,7 +20,7 @@ module.exports = (app) => {
 	app.use(passport.initialize());
 
 	app.post(
-		"/signup",
+		"/api/auth-service/signup",
 		async (req, res, next) => {
 			try {
 				const { username, password, role } = req.body;
@@ -36,7 +36,7 @@ module.exports = (app) => {
 				const modifiedUser = {
 					username: user.username,
 					role: role,
-					iat: user.iat
+					iat: user.iat,
 				};
 
 				req.user = modifiedUser;
@@ -53,7 +53,7 @@ module.exports = (app) => {
 		passport.authenticate("local-signup", { session: false }),
 		(req, res) => {
 			//const token = jwt.sign(req.user, process.env.MY_SECRET, { expiresIn: '1h' });
-			
+
 			const token = jwt.sign(req.user, process.env.MY_SECRET);
 			/**
 			 * {
