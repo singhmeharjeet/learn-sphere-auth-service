@@ -64,7 +64,6 @@ module.exports = (app) => {
 			 * }
 			 */
 			
-			req.user = modifiedUser;
 			return res.status(200).json({
 				success: true,
 				message: "Signed up successfully",
