@@ -24,6 +24,7 @@ module.exports = (app) => {
 		async (req, res, next) => {
 			try {
 				const { username, password, role } = req.body;
+				
 				const existingUser = await getUser(username);
 				if (existingUser) {
 					return res.status(400).json({
@@ -33,6 +34,7 @@ module.exports = (app) => {
 				}
 				const user = await createUser(username, password, role);
 
+				
 				const modifiedUser = {
 					username: user.username,
 					role: role,
@@ -40,7 +42,7 @@ module.exports = (app) => {
 				};
 
 				req.user = modifiedUser;
-
+				
 				next();
 			} catch (error) {
 				return res.status(500).json({
@@ -53,7 +55,7 @@ module.exports = (app) => {
 		passport.authenticate("local-signup", { session: false }),
 		(req, res) => {
 			//const token = jwt.sign(req.user, process.env.MY_SECRET, { expiresIn: '1h' });
-
+			
 			const token = jwt.sign(req.user, process.env.MY_SECRET);
 			/**
 			 * {
@@ -61,7 +63,7 @@ module.exports = (app) => {
 			 *
 			 * }
 			 */
-			return res.json({
+			return res.status(200).json({
 				success: true,
 				message: "Signed up successfully",
 				user: req.user,
