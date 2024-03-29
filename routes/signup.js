@@ -63,6 +63,12 @@ module.exports = (app) => {
 			 *
 			 * }
 			 */
+			const modifiedUser = {
+				username: user.username,
+				role: role,
+				iat: user.iat,
+			};
+			req.user = modifiedUser;
 			return res.status(200).json({
 				success: true,
 				message: "Signed up successfully",
