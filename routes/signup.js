@@ -55,7 +55,7 @@ module.exports = (app) => {
 		passport.authenticate("local-signup", { session: false }),
 		(req, res) => {
 			//const token = jwt.sign(req.user, process.env.MY_SECRET, { expiresIn: '1h' });
-			
+			delete req.user.password;
 			const token = jwt.sign(req.user, process.env.MY_SECRET);
 			/**
 			 * {
@@ -63,11 +63,7 @@ module.exports = (app) => {
 			 *
 			 * }
 			 */
-			const modifiedUser = {
-				username: user.username,
-				role: role,
-				iat: user.iat,
-			};
+			
 			req.user = modifiedUser;
 			return res.status(200).json({
 				success: true,
