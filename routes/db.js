@@ -27,7 +27,7 @@ const getUser = async (username) => {
 	}
 };
 
-const createUser = async function (username, password, role) {
+const createUser = async function ({ username, password, role }) {
 	const DB_user = await getUser(username);
 
 	if (DB_user) {
@@ -36,46 +36,48 @@ const createUser = async function (username, password, role) {
 			message: "User already exists",
 		};
 	} else {
-		const userJson = {
-			username: username,
-			password: password,
-			role: role,
-		};
-
-		await db.collection("users").doc(userJson.username).set(userJson);
+		await db.collection("users").doc(username).set({
+			username,
+			password,
+			role,
+		});
 
 		return {
-			username: userJson.username,
-			role: userJson.role,
+			success: true,
+			message: "Signup successful",
+			user: {
+				username,
+				role,
+			},
 		};
 	}
 };
 
 const deleteUser = async function (username) {
-    try {
-        const userDoc = await db.collection("users").doc(username).get();
-        if (!userDoc.exists) {
-            return {
-                success: false,
-                message: "User not found",
-            };
-        }
-        await db.collection("users").doc(username).delete();
-        return {
-            success: true,
-            message: "User deleted successfully",
-        };
-    } catch (error) {
-        return {
-            success: false,
-            message: "Error deleting user: " + error.message,
-        };
-    }
+	try {
+		const userDoc = await getUser(username);
+		if (!userDoc) {
+			return {
+				success: false,
+				message: "User not found",
+			};
+		}
+
+		await db.collection("users").doc(username).delete();
+		return {
+			success: true,
+			message: "User deleted successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			message: "Error deleting user: " + error.message,
+		};
+	}
 };
 
-
 module.exports = {
-    getUser,
-    createUser,
-    deleteUser,
+	getUser,
+	createUser,
+	deleteUser,
 };
