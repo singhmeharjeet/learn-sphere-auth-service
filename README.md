@@ -1,3 +1,5 @@
+![LearnSphere Service Titles Auth](https://github.com/singhmeharjeet/learn-sphere-auth-service/assets/32851308/f934bcf4-8f97-4d3d-a7ea-6e623817dbb0)
+
 Welcome Message
 
     GET /
